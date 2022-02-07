@@ -1,5 +1,5 @@
 const discord = require("discord.js")
-const client = discord.Client()
+const client = new discord.Client({intents: 2147609664})
 
 client.on("messageCreate", message => {
   let msczFiles = message.attachments.filter(attachment => attachment.name.endsWith("mscz"))
