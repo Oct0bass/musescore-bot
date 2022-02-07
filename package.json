@@ -1,0 +1,24 @@
+{
+  "name": "musescorebot",
+  "version": "1.0.0",
+  "description": "MuseScore file discord bot",
+  "main": "main.js",
+  "dependencies": {
+    "discord.js": "^13.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "musescorebot"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "musescore"
+  ],
+  "author": "Rohan Rajagopal",
+  "license": "GPL-3.0-or-later"
+}
