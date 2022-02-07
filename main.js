@@ -13,3 +13,5 @@ client.channels.cache.filter(channel => channel.type = GUILD_TEXT).foreach(chann
     channel.send("test").catch(console.error)
   }).catch(console.error)
 })
+
+client.login(client.token)
