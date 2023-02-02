@@ -48,3 +48,5 @@ class MusescoreBot {
     message.reply(result)
   }
 }
+
+const bot = new MusescoreBot()
