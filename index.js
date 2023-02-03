@@ -23,7 +23,7 @@ class MusescoreBot {
     console.debug(`Recieved message ${message}`)
 
     const msczFiles = message.attachments.filter(attachment => attachment.name.endsWith("mscz"))
-    if (!msczFiles) { return }
+    if (!msczFiles.length) { return }
 
     let wavAttachments = []
     let pdfAttachments = []
@@ -43,11 +43,12 @@ class MusescoreBot {
       })
     }
 
-    let result = new discord.Message(this.client)
-    result.attachments = wavAttachments.concat(pdfAttachments)
-    result.content = errorMessages.join("\n")
 
-    message.reply(result)
+
+    message.reply({
+      body: errorMessages.join("\n"),
+      files: wavAttachments.concat(pdfAttachments)
+    })
   }
 }
 
