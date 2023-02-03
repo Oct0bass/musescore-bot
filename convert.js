@@ -2,7 +2,7 @@ import * as fs from "node:fs/promises"
 import * as process from "node:process"
 import {exec} from "node:child_process"
 
-class MuseConverter {
+export class MuseConverter {
   constructor(executable, workingDir) {
     this.executable = executable
     fs.mkdir(workingDir, {recursive: true}).catch(error => {
