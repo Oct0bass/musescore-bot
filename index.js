@@ -20,10 +20,10 @@ class MusescoreBot {
   }
 
   handleMessage(message) {
-    console.debug(`Recieved message ${message}`)
-
     const msczFiles = message.attachments.filter(attachment => attachment.name.endsWith("mscz"))
-    if (!msczFiles.length) { return }
+    if (msczFiles.size == 0) { return }
+
+    console.debug(`Recieved message "${message}" with ${msczFiles.size} MuseScore (mscz) file(s).`)
 
     let wavAttachments = []
     let pdfAttachments = []
@@ -31,19 +31,22 @@ class MusescoreBot {
 
     for (file in msczFiles) {
       const data = file.attachment.buffer
+      const baseFileName = file.name.slice(0, file.name.lastIndexOf("."))
       converter.convert(data, "wav").then(wavData => {
-        wavAttachments.push(new discord.MessageAttachment(wavData))
+        console.debug(`Converted ${file.name} to wav.`)
+        wavAttachments.push(new discord.MessageAttachment(wavData, baseFileName + ".wav"))
       }).catch(reason => {
+        console.warn(`Could not convert ${file.name} to wav: ${reason}`)
         errorMessages.push(`Could not convert ${file.name} to wav: ${reason}`)
       })
       converter.convert(data, "pdf").then(pdfData => {
-        pdfAttachments.push(new discord.MessageAttachment(pdfData))
+        console.debug(`Converted ${file.name} to pdf`)
+        pdfAttachments.push(new discord.MessageAttachment(pdfData, baseFileName + ".pdf"))
       }).catch(reason => {
+        console.warn(`Could not convert ${file.name} to pdf: ${reason}`)
         errorMessages.push(`Could not convert ${file.name} to pdf: ${reason}`)
       })
     }
-
-
 
     message.reply({
       body: errorMessages.join("\n"),
