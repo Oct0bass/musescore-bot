@@ -29,7 +29,8 @@ class MusescoreBot {
     let pdfAttachments = []
     let errorMessages = []
 
-    for (file in msczFiles) {
+    msczFiles.forEach(file => {
+      console.debug(`Processing file ${file.name}`)
       const data = file.attachment.buffer
       const baseFileName = file.name.slice(0, file.name.lastIndexOf("."))
       converter.convert(data, "wav").then(wavData => {
@@ -46,7 +47,7 @@ class MusescoreBot {
         console.warn(`Could not convert ${file.name} to pdf: ${reason}`)
         errorMessages.push(`Could not convert ${file.name} to pdf: ${reason}`)
       })
-    }
+    })
 
     message.reply({
       body: errorMessages.join("\n"),
