@@ -22,6 +22,7 @@ export class MuseConverter {
         file.close()
       }).catch(reason => reject(reason))
       const command = `${this.executable} ${inputFileName} -o ${outputFileName}`
+      console.debug(`> ${command}`)
       exec(command, (err, stdout, stderr) => {
         if (err) {
           reject(stderr)
