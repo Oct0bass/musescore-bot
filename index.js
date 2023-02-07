@@ -36,7 +36,8 @@ class MusescoreBot {
 
       this.converter.convert(data, ["wav", "pdf"]).then(outputFiles => {
         message.reply({
-          files: outputFiles.values()
+          files: outputFiles.map((extension, data) =>
+            new discord.MessageAttachment(data, `${baseFileName}.${extension}`))
         })
       }).catch(reason => {
         message.reply(reason)
