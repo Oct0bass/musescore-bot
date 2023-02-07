@@ -13,7 +13,7 @@ class MusescoreBot {
     this.client = new discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]})
     this.converter = new MuseConverter(path.resolve(MusescoreBot.MS_EXEC_PATH), MusescoreBot.MS_RUN_DIR)
 
-    this.client.on("ready", c => console.log(`Logged in as ${c.user.tag}`))
+    this.client.on("ready", c => console.info(`Logged in as ${c.user.tag}`))
     this.client.on("messageCreate", this.handleMessage)
 
     this.client.login()
@@ -33,25 +33,12 @@ class MusescoreBot {
       console.debug(`Processing file ${file.name}`)
       const data = file.attachment.buffer
       const baseFileName = file.name.slice(0, file.name.lastIndexOf("."))
-      converter.convert(data, "wav").then(wavData => {
-        console.debug(`Converted ${file.name} to wav.`)
-        wavAttachments.push(new discord.MessageAttachment(wavData, baseFileName + ".wav"))
-      }).catch(reason => {
-        console.warn(`Could not convert ${file.name} to wav: ${reason}`)
-        errorMessages.push(`Could not convert ${file.name} to wav: ${reason}`)
-      })
-      converter.convert(data, "pdf").then(pdfData => {
-        console.debug(`Converted ${file.name} to pdf`)
-        pdfAttachments.push(new discord.MessageAttachment(pdfData, baseFileName + ".pdf"))
-      }).catch(reason => {
-        console.warn(`Could not convert ${file.name} to pdf: ${reason}`)
-        errorMessages.push(`Could not convert ${file.name} to pdf: ${reason}`)
-      })
-    })
 
-    message.reply({
-      body: errorMessages.join("\n"),
-      files: wavAttachments.concat(pdfAttachments)
+      this.converter.convert(data, ["wav", "pdf"]).then(outputFiles => {
+        message.reply({
+          files: outputFiles.values()
+        })
+      }).catch(message.reply)
     })
   }
 }

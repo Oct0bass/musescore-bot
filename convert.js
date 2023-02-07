@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises"
 import * as process from "node:process"
+import * as path from "node:path"
 import {exec} from "node:child_process"
 
 export class MuseConverter {
@@ -10,27 +11,41 @@ export class MuseConverter {
         throw error
       }
     })
-    process.chdir(workingDir)
   }
 
-  convert(data, type) {
-    const inputFileName = "input.mscz"
-    const outputFileName = `output.${type}`
+  convert(data, types, inputType = "mscz") {
+    const inputFilePath = path.resolve(this.workingDir, `input.${inputType}`)
+    const outputFilePaths = types.map(type => path.resolve(this.workingDir, `output.${type}`))
+    const conversionJobPath = path.resolve(this.workingDir, "job.json")
     return new Promise((resolve, reject) => {
-      fs.open(inputFileName, "wt").then(file => {
+      fs.open(inputFilePath, "wt").then(file => {
         file.write(data)
         file.close()
-      }).catch(reason => reject(reason))
-      const command = `${this.executable} ${inputFileName} -o ${outputFileName}`
+      }).catch(reason => reject(`Could not write input file: ${reason}`))
+      const job = JSON.stringify([{
+        in: inputFilePath,
+        out: outputFilePaths
+      }])
+      fs.open(conversionJobPath, "wt").then(file => {
+        file.write(job)
+        file.close()
+      }).catch(reason => reject(`Could not write conversion job file: ${reason}`))
+      const command = `${this.executable} ${inputFilePath} -j ${outputFileName}`
       console.debug(`converter @ ${this.workingDir}> ${command}`)
       exec(command, (err, stdout, stderr) => {
         if (err) {
-          reject(stderr)
+          reject(`Command ${command} failed with code ${err}: ${stderr}`)
         }
       })
-      fs.open(outputFileName).then(file => {
-        file.read().then(outputData => resolve(outputData)).catch(reason => reject(reason))
-      }).catch(reason => reject(reason))
+      let result = new Map()
+      for (const outputFile in outputFilePaths) {
+        fs.open(outputFile).then(file => {
+          file.read().then(buf => {
+            result[outputFile.slice(outputFile.lastIndexOf("."))] = buf
+          }).catch(reason => `Could not read output file ${outputFile}: ${reason}`)
+        })
+      }
+      resolve(result)
     })
   }
 }
