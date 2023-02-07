@@ -38,7 +38,10 @@ class MusescoreBot {
         message.reply({
           files: outputFiles.values()
         })
-      }).catch(message.reply)
+      }).catch(reason => {
+        message.reply(reason)
+        console.warn(reason)
+      })
     })
   }
 }
