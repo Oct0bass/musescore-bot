@@ -17,20 +17,22 @@ export class MuseConverter {
     const inputFilePath = path.resolve(this.workingDir, `input.${inputType}`)
     const outputFilePaths = types.map(type => path.resolve(this.workingDir, `output.${type}`))
     const conversionJobPath = path.resolve(this.workingDir, "job.json")
+
+    const job = JSON.stringify([{
+      in: inputFilePath,
+      out: outputFilePaths
+    }])
+    const command = `${this.executable} ${inputFilePath} -j ${conversionJobPath}`
+
     return new Promise((resolve, reject) => {
       fs.open(inputFilePath, "wt").then(file => {
         file.write(data)
         file.close()
       }).catch(reason => reject(`Could not write input file: ${reason}`))
-      const job = JSON.stringify([{
-        in: inputFilePath,
-        out: outputFilePaths
-      }])
       fs.open(conversionJobPath, "wt").then(file => {
         file.write(job)
         file.close()
       }).catch(reason => reject(`Could not write conversion job file: ${reason}`))
-      const command = `${this.executable} ${inputFilePath} -j ${conversionJobPath}`
       console.debug(`converter @ ${this.workingDir}> ${command}`)
       exec(command, (err, stdout, stderr) => {
         if (err) {
@@ -41,7 +43,7 @@ export class MuseConverter {
       for (const outputFile in outputFilePaths) {
         fs.open(outputFile).then(file => {
           file.read().then(buf => {
-            result[outputFile.slice(outputFile.lastIndexOf("."))] = buf
+            result.set(outputFile.slice(outputFile.lastIndexOf(".")), buf)
           }).catch(reason => `Could not read output file ${outputFile}: ${reason}`)
         })
       }
