@@ -30,7 +30,7 @@ export class MuseConverter {
         file.write(job)
         file.close()
       }).catch(reason => reject(`Could not write conversion job file: ${reason}`))
-      const command = `${this.executable} ${inputFilePath} -j ${outputFileName}`
+      const command = `${this.executable} ${inputFilePath} -j ${conversionJobPath}`
       console.debug(`converter @ ${this.workingDir}> ${command}`)
       exec(command, (err, stdout, stderr) => {
         if (err) {
