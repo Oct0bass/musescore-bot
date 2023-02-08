@@ -40,7 +40,7 @@ export class MuseConverter {
         }
       })
       let result = new Map()
-      for (const outputFile in outputFilePaths) {
+      for (const outputFile of outputFilePaths) {
         fs.open(outputFile).then(file => {
           file.read().then(buf => {
             result.set(outputFile.slice(outputFile.lastIndexOf(".")), buf)
