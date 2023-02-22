@@ -12,7 +12,9 @@ class MusescoreBot {
   static MS_RUN_DIR = os.tmpdir()
 
   constructor() {
-    this.client = new discord.Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]})
+    this.client = new discord.Client({
+      intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
+    })
     this.converter = null
   }
 
@@ -30,7 +32,7 @@ class MusescoreBot {
   handleMessage(message) {
     const msczFiles = message.attachments.filter(attachment => attachment.name.endsWith("mscz"))
     if (msczFiles.size == 0) { return }
-    
+
     console.debug(`Recieved message "${message}" with ${msczFiles.size} MuseScore (mscz) file(s).`)
 
     if (!this.converter) {
@@ -51,7 +53,7 @@ class MusescoreBot {
         files: outputFiles.map((outputData, extension) =>
           new discord.MessageAttachment(data, `${baseFileName}.${extension}`))
       })).catch(reason => {
-        message.reply(reason)
+        message.reply(reason).catch(console.error)
         console.warn(reason)
       })
     })
