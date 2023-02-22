@@ -1,15 +1,22 @@
+import * as discord from "discord.js"
 import * as fs from "node:fs/promises"
-import * as process from "node:process"
 import * as path from "node:path"
-import {exec} from "node:child_process"
+import {exec as _exec} from "node:child_process"
+import {promisify} from "node:util"
+
+const exec = promisify(_exec)
 
 export class MuseConverter {
   constructor(executable, workingDir) {
     this.executable = executable
-    fs.mkdir(workingDir, {recursive: true}).catch(error => {
-      if (error && error.code !== "EEXIST") {
-        throw error
-      }
+    this.workingDir = workingDir
+    this.available = true
+  }
+
+  static create(executable, rootDir) {
+    return fs.mkdtemp(path.join(rootDir, "converter-")).then(tempDir => {
+      console.debug(`Created converter at ${tempDir} using ${executable}`)
+      return new MuseConverter(executable, tempDir)
     })
   }
 
@@ -24,30 +31,23 @@ export class MuseConverter {
     }])
     const command = `${this.executable} ${inputFilePath} -j ${conversionJobPath}`
 
-    return new Promise((resolve, reject) => {
-      fs.open(inputFilePath, "wt").then(file => {
-        file.write(data)
-        file.close()
-      }).catch(reason => reject(`Could not write input file: ${reason}`))
-      fs.open(conversionJobPath, "wt").then(file => {
-        file.write(job)
-        file.close()
-      }).catch(reason => reject(`Could not write conversion job file: ${reason}`))
+
+    return Promise.all([
+      fs.writeFile(inputFilePath, data),
+      fs.writeFile(conversionJobPath, job)
+    ]).then(_ => {
       console.debug(`converter @ ${this.workingDir}> ${command}`)
-      exec(command, (err, stdout, stderr) => {
-        if (err) {
-          reject(`Command ${command} failed with code ${err}: ${stderr}`)
-        }
+      return exec(command)
+    }).then(({stdout, stderr}) =>
+      Promise.all(outputFilePaths.map(fs.readFile))
+    ).then(buffers => {
+      let result = new discord.Collection()
+
+      buffers.forEach((buffer, i) => {
+        result.set(types[i], buffer)
       })
-      let result = new Map()
-      for (const outputFile of outputFilePaths) {
-        fs.open(outputFile).then(file => {
-          file.read().then(buf => {
-            result.set(outputFile.slice(outputFile.lastIndexOf(".")), buf)
-          }).catch(reason => `Could not read output file ${outputFile}: ${reason}`)
-        })
-      }
-      resolve(result)
+
+      return result
     })
   }
 }
