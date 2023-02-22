@@ -31,7 +31,7 @@ export class MuseConverter {
       in: inputFilePath,
       out: outputFilePaths
     }])
-    const command = `"${this.executable}" "${inputFilePath}" -j "${conversionJobPath}"`
+    const command = `"${this.executable}" -j "${conversionJobPath}"`
 
     return Promise.all([
       fs.writeFile(inputFilePath, data),
