@@ -25,6 +25,8 @@ export class MuseConverter {
     const outputFilePaths = types.map(type => path.resolve(this.workingDir, `output.${type}`))
     const conversionJobPath = path.resolve(this.workingDir, "job.json")
 
+    this.available = false
+
     const job = JSON.stringify([{
       in: inputFilePath,
       out: outputFilePaths
@@ -41,6 +43,7 @@ export class MuseConverter {
     }).then(({stdout, stderr}) =>
       Promise.all(outputFilePaths.map(fs.readFile))
     ).then(buffers => {
+      this.available = true
       let result = new discord.Collection()
 
       buffers.forEach((buffer, i) => {

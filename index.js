@@ -37,6 +37,8 @@ class MusescoreBot {
       return
     }
 
+    while(!this.converter.available) {} 
+
     msczFiles.forEach(file => {
       console.debug(`Processing file ${file.name}`)
       const data = file.attachment.buffer
