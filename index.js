@@ -30,6 +30,7 @@ class MusescoreBot {
   handleMessage(message) {
     const msczFiles = message.attachments.filter(attachment => attachment.name.endsWith("mscz"))
     if (msczFiles.size == 0) { return }
+    
     console.debug(`Recieved message "${message}" with ${msczFiles.size} MuseScore (mscz) file(s).`)
 
     if (!this.converter) {
@@ -37,7 +38,7 @@ class MusescoreBot {
       return
     }
 
-    while(!this.converter.available) {} 
+    while (!this.converter.available) {}
 
     msczFiles.forEach(file => {
       console.debug(`Processing file ${file.name}`)

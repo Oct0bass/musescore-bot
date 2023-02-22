@@ -33,7 +33,6 @@ export class MuseConverter {
     }])
     const command = `"${this.executable}" "${inputFilePath}" -j "${conversionJobPath}"`
 
-
     return Promise.all([
       fs.writeFile(inputFilePath, data),
       fs.writeFile(conversionJobPath, job)
@@ -44,12 +43,11 @@ export class MuseConverter {
       Promise.all(outputFilePaths.map(fs.readFile))
     ).then(buffers => {
       this.available = true
-      let result = new discord.Collection()
 
+      let result = new discord.Collection()
       buffers.forEach((buffer, i) => {
         result.set(types[i], buffer)
       })
-
       return result
     })
   }
