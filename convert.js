@@ -29,7 +29,7 @@ export class MuseConverter {
       in: inputFilePath,
       out: outputFilePaths
     }])
-    const command = `${this.executable} ${inputFilePath} -j ${conversionJobPath}`
+    const command = `${this.executable} "${inputFilePath}" -j "${conversionJobPath}"`
 
 
     return Promise.all([
