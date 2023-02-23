@@ -12,9 +12,12 @@ class MusescoreBot {
   static MS_RUN_DIR = os.tmpdir()
 
   constructor() {
-    this.client = new discord.Client({
-      intents: [discord.GatewayIntentBits.Guilds, discord.GatewayIntentBits.GuildMessages, discord.GatewayIntentBits.GuildMessageReactions]
-    })
+    this.client = new discord.Client({intents: [
+      discord.GatewayIntentBits.Guilds,
+      discord.GatewayIntentBits.GuildMessages,
+      discord.GatewayIntentBits.MessageContent,
+      discord.GatewayIntentBits.GuildMessageReactions
+    ]})
     this.converter = null
   }
 
