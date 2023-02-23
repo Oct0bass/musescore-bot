@@ -13,7 +13,7 @@ class MusescoreBot {
 
   constructor() {
     this.client = new discord.Client({
-      intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
+      intents: [discord.GatewayIntentBits.Guilds, discord.GatewayIntentBits.GuildMessages, discord.GatewayIntentBits.GuildMessageReactions]
     })
     this.converter = null
   }
