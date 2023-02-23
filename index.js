@@ -8,7 +8,7 @@ import {MuseConverter} from "./convert.js"
 const Intents = discord.Intents
 
 class MusescoreBot {
-  static MS_EXEC_PATH = path.resolve("bin/mscore")
+  static MS_EXEC_PATH = process.env.MSCORE_PATH ?? path.resolve("bin/mscore")
   static MS_RUN_DIR = os.tmpdir()
 
   constructor() {
