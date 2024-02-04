@@ -54,10 +54,7 @@ class MusescoreBot {
       ).then(outputFiles => message.reply({
         files: outputFiles.map((outputData, extension) =>
           new discord.MessageAttachment(data, `${baseFileName}.${extension}`))
-      })).catch(reason => {
-        message.reply(reason).catch(console.error)
-        console.warn(reason)
-      })
+      })).catch(console.error)
     })
   }
 }

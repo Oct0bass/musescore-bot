@@ -43,13 +43,11 @@ export class MuseConverter {
       console.debug(`${path.basename(this.workingDir)}: ${path.basename(this.executable)}: ${stdout}`)
       return Promise.all(outputFilePaths.map(fs.readFile))
     }).then(buffers => {
-      this.available = true
-
       let result = new discord.Collection()
       buffers.forEach((buffer, i) => {
         result.set(types[i], buffer)
       })
       return result
-    })
+    }).finally(_ => this.available = true)
   }
 }
