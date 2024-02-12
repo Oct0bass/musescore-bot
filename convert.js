@@ -40,8 +40,14 @@ export class MuseConverter {
       console.debug(`converter @ ${this.workingDir}> ${command}`)
       return exec(command)
     }).then(({stdout, stderr}) => {
-      console.debug(`${path.basename(this.workingDir)}: ${path.basename(this.executable)}: ${stdout}`)
-      return Promise.all(outputFilePaths.map(fs.readFile))
+      const logPrefix = `${path.basename(this.workingDir)}: ${path.basename(this.executable)}: `
+      if (stdout) {
+        console.debug(logPrefix + stdout)
+      }
+      if (stderr) {
+        console.warn(logPrefix + stderr)
+      }
+      return Promise.all(outputFilePaths.map(file => fs.readFile(file)))
     }).then(buffers => {
       let result = new discord.Collection()
       buffers.forEach((buffer, i) => {
